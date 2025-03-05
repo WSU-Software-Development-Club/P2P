@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/Resources">
+        <file>P2PIcon.png</P2Picon.png> 
+    </qresource>
+</RCC>
