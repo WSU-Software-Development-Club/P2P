@@ -6,6 +6,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
     QMenu *fileMenu = menuBar()->addMenu(tr("&File"));
 
     // Create Open action
@@ -28,3 +29,54 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
+
+void MainWindow::on_lnIPAddress_textChanged(const QString &arg1)
+{
+    QString state = "0";
+    if (arg1 == "...") {
+        state = "";
+    } else {
+        QHostAddress address(arg1);
+        if (QAbstractSocket::IPv4Protocol == address.protocol()) {
+            state = "1";
+        }
+    }
+    ui->lnIPAddress->setProperty("state", state);
+    style()->polish(ui->lnIPAddress);
+}
+
+
+void MainWindow::on_btnConnect_clicked()
+{
+    auto ip = ui->lnIPAddress->text();
+    auto port = ui->spinPort->value();
+    _controller.connectToNetwork(ip, port);
+}
+
+void MainWindow::network_connected()
+{
+    ui->lstConsole->addItem("Connected to Network");
+}
+
+void MainWindow::network_disconnected()
+{
+    ui->lstConsole->addItem("Disconnected to Network");
+}
+
+void MainWindow::netwowork_stateChanged(QAbstractSocket::SocketState state)
+{
+    QMetaEnum metaEnum = QMetaEnum::fromType<QAbstractSocket::SocketState>();
+    ui->lstConsole->addItem(metaEnum.valueToKey(state));
+}
+
+void MainWindow::network_errorOccurred(QAbstractSocket::SocketError error)
+{
+    QMetaEnum metaEnum = QMetaEnum::fromType<QAbstractSocket::SocketState>();
+    ui->lstConsole->addItem(metaEnum.valueToKey(error));
+}
+
+void MainWindow::setNetworkController()
+{
+
+}
+
