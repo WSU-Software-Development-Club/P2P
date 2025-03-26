@@ -31,14 +31,17 @@ public:
 
             numReadTotal += numRead;
             stream_mutex.unlock();
-            if (numRead == 0 && !socket.waitForReadyRead())
-                break;
+            while(socket.bytesAvailable() == 0)
+            {
+                this->sendData();
+            }
         }
     }
 
-    std:stringstream GetStream() {
+    std::stringstream GetStream() {
         std::stringstream returnStream;
-        if (stream_mutex.try_lock_for(std::chrono::milliseconds(1))){
+        if (stream_mutex.try_lock_for(std::chrono::milliseconds(1)))
+        {
             if (stream.good())
                 returnStream.swap(stream);
             stream_mutex.unlock();
@@ -46,8 +49,22 @@ public:
         return returnStream;
     }
 
+    void CreateServer(std::string &serverName, std::string &serverPassword)
+    {
+
+
+        // Send to server
+
+        this->serverSendStream << "ServerName: " << serverName << ", ServerPassword: " << serverPassword;
+
+    }
 
 protected:
+    void sendData(){
+
+    }
+
+    std::stringstream serverSendStream;
     std::timed_mutex stream_mutex;
     std::stringstream stream;
     QTcpSocket socket;
