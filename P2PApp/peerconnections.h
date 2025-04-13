@@ -58,13 +58,16 @@ public:
             return false;
 
         QTcpSocket newPeer = QTcpSocket();
-
-        newPeer.bind();
-        newPeer.connectToHost(ip, port);
-        if (newPeer.isValid()) {
-            tcpConnections.push_back(newPeer);
-            return true;
-        }
+        int i = -5;
+        do {
+            newPeer.bind();
+            newPeer.connectToHost(ip, port + i);
+            if (newPeer.isValid()) {
+                tcpConnections.push_back(newPeer);
+                return true;
+            }
+            i++;
+        } while (!newPeer.isValid() && i < 5);
         return false;
     }
 
